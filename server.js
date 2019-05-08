@@ -1,14 +1,29 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const sodaRouter = require('./routes/sodaRouter');
 const app = express();
 
 console.log('This runs on startup.');
 
-// Middleware 
-app.get('/test', (req, res) => {
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+
+app.use('/sodas', sodaRouter);
+
+app.use('/', (req, res) => {
     console.log(req);
-    res.send('Hello!');
+    res.send('Hello there, General Kenobi.');
 });
 
-app.listen(4444, () =>{
-    console.log('Listening on port 4444...');
+mongoose.connect('mongodb://localhost:27017/sodas', { useNewUrlParser: true});
+mongoose.connection.on('connected', () => {
+    console.log('Connected to sodas DB.');
+});
+mongoose.connection.on('error', () => {
+    console.log('Error.');
+});
+
+const port = process.env.PORT || 4444
+app.listen(port, () =>{
+    console.log(`Listening on port ${port}...`);
 });
